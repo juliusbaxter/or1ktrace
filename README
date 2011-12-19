@@ -1,0 +1,25 @@
+				or1ktrace
+				=========
+
+About:
+======
+This is a library intended to be used by OpenRISC 1000 simulation models to 
+generate execution traces.
+
+It doesn't fully work yet.
+
+It's handy because you don't have to write a disassembler in every single
+model you have - just link to this guy and generate consistent traces across
+all models, which makes them easy to debug and compare.
+
+That's the idea, anyway.
+
+TODO:
+=====
+
+ * Plumb it into or1ksim for starters, and check the full trace line works.
+   Next try to get it into Verilog and cycle accurate RTL models.
+ * Double check whether all the callbacks are really needed.
+ * Maybe add a binary trace option where we sort out a data structure that 
+   can be dumped to a file for greater speed. This would also involve somehow
+   decoding the function back into trace lines.
