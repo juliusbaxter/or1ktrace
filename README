@@ -14,6 +14,40 @@ all models, which makes them easy to debug and compare.
 
 That's the idea, anyway.
 
+Building:
+=========
+
+So far, the library builds and the basic disassembly test runs. But it is not
+automated or pretty.
+
+* Configuring
+  Run ./configure but also pass the location of a binutils compile directory
+  so it can pickup the libbfd and libopcodes archives and headers it contains.
+
+      ./configure \
+      BINUTILS_BLD_DIR=$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf
+
+  Next, run make to build the libraries.
+
+      make
+
+  But the test executable won't build because it needs some libraries after
+  libor1ktrace is added:
+
+  I then compile it with:
+
+      gcc -g -O2 -o testasm test-asm.c  \
+      -L$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf/bfd \
+      -L$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf/opcodes \
+      -lbfd -lopcodes -liberty -lz ./.libs/libor1ktrace.a -lbfd -lopcodes \
+      -lbfd -liberty -lz
+
+  Run the disassembly test executable with:
+
+      ./testasm
+
+  
+
 TODO:
 =====
 

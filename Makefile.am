@@ -2,7 +2,7 @@
 # Local macros
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS	= test-asm
+bin_PROGRAMS	= testasm
 lib_LTLIBRARIES	= libor1ktrace.la 
 
 BINUTILS_DIR = @BINUTILS_BLD_DIR@
@@ -22,9 +22,9 @@ libor1ktrace_la_CFLAGS = -I$(BINUTILS_DIR)/bfd \
 #libor1ktrace_la_LDFLAGS = -liberty -lz
 
 # A little command-line interface program
-test-asm_SOURCES 	= test-asm.c
-test-asm_LDADD	= libor1ktrace.la
-test-asm_LDFLAGS =	-L$(BINUTILS_DIR)/bfd \
+testasm_SOURCES 	= test-asm.c
+testasm_LDADD	= libor1ktrace.la
+testasm_LDFLAGS =	-L$(BINUTILS_DIR)/bfd \
 			-L$(BINUTILS_DIR)/opcodes \
 			-lbfd -lopcodes -lbfd -lopcodes -liberty -lz
 

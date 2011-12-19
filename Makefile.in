@@ -36,7 +36,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = cli$(EXEEXT)
+bin_PROGRAMS = testasm$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -85,11 +85,11 @@ libor1ktrace_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libor1ktrace_la_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
-am_cli_OBJECTS = cli.$(OBJEXT)
-cli_OBJECTS = $(am_cli_OBJECTS)
-cli_DEPENDENCIES = libor1ktrace.la
-cli_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(cli_LDFLAGS) \
+am_testasm_OBJECTS = test-asm.$(OBJEXT)
+testasm_OBJECTS = $(am_testasm_OBJECTS)
+testasm_DEPENDENCIES = libor1ktrace.la
+testasm_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(testasm_LDFLAGS) \
 	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -104,8 +104,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libor1ktrace_la_SOURCES) $(cli_SOURCES)
-DIST_SOURCES = $(libor1ktrace_la_SOURCES) $(cli_SOURCES)
+SOURCES = $(libor1ktrace_la_SOURCES) $(testasm_SOURCES)
+DIST_SOURCES = $(libor1ktrace_la_SOURCES) $(testasm_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -259,11 +259,11 @@ libor1ktrace_la_CFLAGS = -I$(BINUTILS_DIR)/bfd \
 #libor1ktrace_la_LDFLAGS = -liberty -lz
 
 # A little command-line interface program
-cli_SOURCES = cli.c
-cli_LDADD = libor1ktrace.la
-cli_LDFLAGS = -L$(BINUTILS_DIR)/bfd \
-		-L$(BINUTILS_DIR)/opcodes \
-		-lbfd -lopcodes -lbfd -lopcodes -liberty -lz
+testasm_SOURCES = test-asm.c
+testasm_LDADD = libor1ktrace.la
+testasm_LDFLAGS = -L$(BINUTILS_DIR)/bfd \
+			-L$(BINUTILS_DIR)/opcodes \
+			-lbfd -lopcodes -lbfd -lopcodes -liberty -lz
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -397,9 +397,9 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-cli$(EXEEXT): $(cli_OBJECTS) $(cli_DEPENDENCIES) 
-	@rm -f cli$(EXEEXT)
-	$(cli_LINK) $(cli_OBJECTS) $(cli_LDADD) $(LIBS)
+testasm$(EXEEXT): $(testasm_OBJECTS) $(testasm_DEPENDENCIES) 
+	@rm -f testasm$(EXEEXT)
+	$(testasm_LINK) $(testasm_OBJECTS) $(testasm_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -407,8 +407,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cli.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libor1ktrace_la-or1ktrace.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-asm.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
