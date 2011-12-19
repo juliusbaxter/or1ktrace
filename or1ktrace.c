@@ -14,7 +14,6 @@ static disassemble_info or1ktrace_disinfo;
 static disassembler_ftype or1ktrace_disassemble;
 static char *or1ktrace_dis_string;
 static int or1ktrace_dis_string_offset;
-static unsigned long int or1ktrace_current_insn;
 static unsigned long int or1ktrace_current_addr;
 static unsigned long int  (*or1ktrace_get_mem32)(unsigned long int);
 static unsigned long int  (*or1ktrace_get_gpr)(int);
@@ -103,6 +102,14 @@ read_memory_func (bfd_vma memaddr,
       unsigned long int insn = (*or1ktrace_get_mem32)
 	((unsigned long int)memaddr);
 
+#define SWAP_ENDIAN32(x)			\
+      (((x>>24)&0xff)|				\
+       ((x>>8)&0xff00)|				\
+       ((x<<8)&0xff0000)|			\
+       ((x<<24)&0xff000000))
+      
+      insn = SWAP_ENDIAN32(insn);
+
       memcpy((void *)myaddr, (void*)&insn, length);
 
       if (or1ktrace_debug)
@@ -129,7 +136,6 @@ int or1ktrace_gen_insn_string(unsigned long int addr,
   or1ktrace_insn_disassembly_string_len = 0;
   or1ktrace_dis_string_offset = 0;
 
-  or1ktrace_current_insn = insn;
   or1ktrace_current_addr = addr;
 
   if (or1ktrace_debug)
@@ -149,8 +155,7 @@ int or1ktrace_gen_insn_string(unsigned long int addr,
 }
 
 static int or1ktrace_gen_result_string(char* disas_string_ptr,
-				unsigned long int insn,
-				char* trace_string_ptr)
+				       char* trace_string_ptr)
 {
   /* determine from the disassembled string what the result we want to 
    print out is*/
@@ -204,11 +209,11 @@ static int or1ktrace_gen_result_string(char* disas_string_ptr,
 	 {
 	 case 1:
 	   TRACE_SPRINTF("%02x      ",
-			 (*or1ktrace_get_gpr)(trace_store_val_reg));
+			 (*or1ktrace_get_gpr)(trace_store_val_reg)&0xff);
 	   break;
 	 case 2:
 	   TRACE_SPRINTF("%04x    ",
-			 (*or1ktrace_get_gpr)(trace_store_val_reg));
+			 (*or1ktrace_get_gpr)(trace_store_val_reg)&0xffff);
 	   break;
 	 case 4:
 	   TRACE_SPRINTF("%08x",(*or1ktrace_get_gpr)(trace_store_val_reg));
@@ -264,9 +269,9 @@ int or1ktrace_gen_trace_string(unsigned long int addr,
 {
 
   or1ktrace_dis_string_offset = 0;
+  or1ktrace_insn_disassembly_string_len = 0;
   or1ktrace_dis_string = trace_string_ptr;
 
-  or1ktrace_current_insn = insn;
   or1ktrace_current_addr = addr;
 
   TRACE_SPRINTF("%c ",
@@ -276,15 +281,17 @@ int or1ktrace_gen_trace_string(unsigned long int addr,
   TRACE_SPRINTF("%08X: ", addr);
 
   /* Instruction binary */
-  TRACE_SPRINTF("%08X ", insn);
+  TRACE_SPRINTF("%08X ", 
+		(*or1ktrace_get_mem32)	
+			      ((unsigned long int)addr));
   
   or1ktrace_disassemble((bfd_vma) addr, &or1ktrace_disinfo);
   
-  TRACE_SPRINTF("%-24s", or1ktrace_insn_disassembly_string);
+  TRACE_SPRINTF("%-26s", or1ktrace_insn_disassembly_string);
   
   or1ktrace_gen_result_string(or1ktrace_insn_disassembly_string,
 			      insn, trace_string_ptr);
-  TRACE_SPRINTF("  flag: %u\n", 
+  TRACE_SPRINTF("  flag: %u", 
 		(*or1ktrace_get_spr)(SPR_SR) & SPR_SR_F ? 1 : 0);
   
   return or1ktrace_dis_string_offset;
