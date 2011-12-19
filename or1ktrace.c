@@ -129,9 +129,7 @@ read_memory_func (bfd_vma memaddr,
   return 0;
 }
 
-int or1ktrace_gen_insn_string(unsigned long int addr,
-			      unsigned long int insn,
-			      char* insn_string_ptr)
+int or1ktrace_gen_insn_string(unsigned long int addr, char* insn_string_ptr)
 {
   or1ktrace_insn_disassembly_string_len = 0;
   or1ktrace_dis_string_offset = 0;
@@ -142,7 +140,7 @@ int or1ktrace_gen_insn_string(unsigned long int addr,
     {
       printf("or1ktrace_gen_insn_string():\n");
       printf("    addr: %08x\n", addr);
-      printf("    insn: %08x\n", insn);
+      printf("    insn: %08x\n", (*or1ktrace_get_mem32)	((unsigned long int)addr));
       printf("\n");
     }
   
@@ -154,8 +152,7 @@ int or1ktrace_gen_insn_string(unsigned long int addr,
   return or1ktrace_insn_disassembly_string_len;
 }
 
-static int or1ktrace_gen_result_string(char* disas_string_ptr,
-				       char* trace_string_ptr)
+static int or1ktrace_gen_result_string(char* disas_string_ptr, char* trace_string_ptr)
 {
   /* determine from the disassembled string what the result we want to 
    print out is*/
@@ -263,9 +260,7 @@ static int or1ktrace_gen_result_string(char* disas_string_ptr,
     }
 }
 
-int or1ktrace_gen_trace_string(unsigned long int addr,
-			       unsigned long int insn,
-			       char* trace_string_ptr)
+int or1ktrace_gen_trace_string(unsigned long int addr, char* trace_string_ptr)
 {
 
   or1ktrace_dis_string_offset = 0;
@@ -290,7 +285,7 @@ int or1ktrace_gen_trace_string(unsigned long int addr,
   TRACE_SPRINTF("%-26s", or1ktrace_insn_disassembly_string);
   
   or1ktrace_gen_result_string(or1ktrace_insn_disassembly_string,
-			      insn, trace_string_ptr);
+			      trace_string_ptr);
   TRACE_SPRINTF("  flag: %u", 
 		(*or1ktrace_get_spr)(SPR_SR) & SPR_SR_F ? 1 : 0);
   
