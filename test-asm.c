@@ -13,12 +13,6 @@ static int or1ktrace_debug_on = 0;
 /* test set of binary to disassemble */
 #include "test-asm-input.h"
 
-#define SWAP_ENDIAN32(x)			\
-      (((x>>24)&0xff)|				\
-	((x>>8)&0xff00)|			\
-	((x<<8)&0xff0000)|			\
-       ((x<<24)&0xff000000))
-
 unsigned long int get_mem32 (unsigned long int addr)
 {
   if (or1ktrace_debug_on)
@@ -27,7 +21,7 @@ unsigned long int get_mem32 (unsigned long int addr)
 	      addr, test_or1k_bin[current_test]);
     }
 
-  return  SWAP_ENDIAN32(test_or1k_bin[current_test]);
+  return  test_or1k_bin[current_test];
 
 }
 
@@ -67,7 +61,7 @@ int main(void)
       
       trace_string_length = or1ktrace_gen_insn_string(test_or1k_pc[current_test],
 						      /* have to change endianess for some reason */
-						      SWAP_ENDIAN32(test_or1k_bin[current_test]),
+						      test_or1k_bin[current_test],
 						      trace_string);
 
       trace_string[trace_string_length] = '\0';
