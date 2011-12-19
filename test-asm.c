@@ -60,8 +60,6 @@ int main(void)
 
       
       trace_string_length = or1ktrace_gen_insn_string(test_or1k_pc[current_test],
-						      /* have to change endianess for some reason */
-						      test_or1k_bin[current_test],
 						      trace_string);
 
       trace_string[trace_string_length] = '\0';
