@@ -26,7 +26,8 @@ testasm_SOURCES 	= test-asm.c
 testasm_LDADD	= libor1ktrace.la
 testasm_LDFLAGS =	-L$(BINUTILS_DIR)/bfd \
 			-L$(BINUTILS_DIR)/opcodes \
-			-lbfd -lopcodes -lbfd -lopcodes -liberty -lz
+			-lor1ktrace \
+			-lbfd -lopcodes -lbfd -lopcodes -lbfd -liberty -lz
 
 
 
