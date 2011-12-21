@@ -27,26 +27,74 @@ automated or pretty.
       ./configure \
       BINUTILS_BLD_DIR=$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf
 
-  Next, run make to build the libraries.
+  Next, run make to build the libraries and a test program.
 
       make
 
-  But the test executable won't build because it needs some libraries after
-  libor1ktrace is added:
-
-  I then compile it with:
-
-      gcc -g -O2 -o testasm test-asm.c  \
-      -L$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf/bfd \
-      -L$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf/opcodes \
-      -lbfd -lopcodes -liberty -lz ./.libs/libor1ktrace.a -lbfd -lopcodes \
-      -lbfd -liberty -lz
+Testing:
+=======
 
   Run the disassembly test executable with:
 
       ./testasm
 
-  
+Using:
+=====
+
+The trace library must be initialised to set up pointers and the like:
+
+* Init
+
+    or1ktrace_init( unsigned long int  (*get_mem32)(unsigned long int),
+		     unsigned long int  (*get_gpr)(int),
+		     unsigned long int  (*get_spr)(int),
+		     int or1ktrace_debug_on);
+
+get_mem32 is a function to read 32-bit memory values from the simulated models'
+memory system. The read data is returned via the function's return value.
+
+get_gpr is a function to read the CPU's general purpose registers (GPRs).
+get_spr is a function to read the CPU's special purpose registers (SPRs).
+
+or1ktrace_debug_on should be set to non-zero to generate debug information
+to stdout. It's not advised it's used.
+
+get_mem32 is always mandatory, but get_gpr and get_spr are only required for
+full execution trace generation.
+
+* Instruction disassembly
+
+There's a function to return just the binary instruction's disassembly string.
+
+	int or1ktrace_gen_insn_string(unsigned long int addr, 
+	    				       char* insn_string_ptr);
+
+Should be simple enough - pass the address of the instruction and expect the
+string pointed to by insn_string_ptr to have the disassembly in it. The length
+of the string is returned by the return value of the function.
+
+* Trace generation
+
+A full execution trace line can be generated with the following function:
+
+  int or1ktrace_gen_trace_string(unsigned long int addr, 
+      					  char* trace_string_ptr);
+
+This outputs a line indicating:
+     * user/supervisor mode as per the supervision register
+     * current PC (actually just the addr value)
+     * current instruction binary value
+     * current instruction disassembly
+     * result of instruction (SPR write, destination register or memory store)
+     * flag
+
+It works the same as the gen_insn_string function, but just generates a 
+different output.
+
+* Installing:
+=============
+
+I wouldn't do this yet...
 
 TODO:
 =====
