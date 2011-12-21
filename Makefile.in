@@ -83,7 +83,7 @@ am_libor1ktrace_la_OBJECTS = libor1ktrace_la-or1ktrace.lo
 libor1ktrace_la_OBJECTS = $(am_libor1ktrace_la_OBJECTS)
 libor1ktrace_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libor1ktrace_la_CFLAGS) \
-	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+	$(CFLAGS) $(libor1ktrace_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
 am_testasm_OBJECTS = test-asm.$(OBJEXT)
 testasm_OBJECTS = $(am_testasm_OBJECTS)
@@ -252,19 +252,18 @@ libor1ktrace_la_SOURCES = or1ktrace.c \
 libor1ktrace_la_CFLAGS = -I$(BINUTILS_DIR)/bfd \
 			-I$(BINUTILS_DIR)/opcodes
 
+libor1ktrace_la_LDFLAGS = \
+			-Wl,--whole-archive		\
+			-L$(BINUTILS_DIR)/bfd 		\
+			-L$(BINUTILS_DIR)/opcodes 	\
+			-lopcodes -lbfd			\
+			-Wl,--no-whole-archive
 
-#libor1ktrace_la_LIBADD = $(BINUTILS_DIR)/bfd/libbfd.la \
-#			$(BINUTILS_DIR)/opcodes/libopcodes.la
-
-#libor1ktrace_la_LDFLAGS = -liberty -lz
 
 # A little command-line interface program
 testasm_SOURCES = test-asm.c
 testasm_LDADD = libor1ktrace.la
-testasm_LDFLAGS = -L$(BINUTILS_DIR)/bfd \
-			-L$(BINUTILS_DIR)/opcodes \
-			-lbfd -lopcodes -lbfd -lopcodes -liberty -lz
-
+testasm_LDFLAGS = -lor1ktrace -liberty -lz
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
