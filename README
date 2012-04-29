@@ -6,8 +6,6 @@ About:
 This is a library intended to be used by OpenRISC 1000 simulation models to 
 generate execution traces.
 
-It doesn't fully work yet.
-
 It's handy because you don't have to write a disassembler in every single
 model you have - just link to this guy and generate consistent traces across
 all models, which makes them easy to debug and compare.
@@ -25,7 +23,8 @@ automated or pretty.
   so it can pickup the libbfd and libopcodes archives and headers it contains.
 
       ./configure \
-      BINUTILS_BLD_DIR=$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf
+      BINUTILS_BLD_DIR=$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf \
+      BINUTILS_SRC_DIR=$HOME/svn/opencores/openrisc/trunk/gnu-src/binutils 
 
   Next, run make to build the libraries and a test program.
 
