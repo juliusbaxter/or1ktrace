@@ -32,6 +32,9 @@ AC_CHECK_PROG(AR, ar, ar)
 AC_ARG_VAR(BINUTILS_BLD_DIR, Directory where OpenRISC binutils has been compiled and we can find libbfd.la and libopcodes.la)
 AC_SUBST(BINUTILS_BLD_DIR)
 
+AC_ARG_VAR(BINUTILS_SRC_DIR, Directory where OpenRISC binutils source can be found)
+AC_SUBST(BINUTILS_SRC_DIR)
+
 
 AC_CONFIG_FILES([Makefile])
 

@@ -21,7 +21,14 @@ unsigned long int get_mem32 (unsigned long int addr)
 	      addr, test_or1k_bin[current_test]);
     }
 
-  return  test_or1k_bin[current_test];
+#define SWAP_ENDIAN32(x)                        \
+      (((x>>24)&0xff)|                          \
+        ((x>>8)&0xff00)|                        \
+        ((x<<8)&0xff0000)|                      \
+       ((x<<24)&0xff000000))
+
+
+  return  SWAP_ENDIAN32(test_or1k_bin[current_test]);
 
 }
 
@@ -37,14 +44,24 @@ unsigned long int get_spr (int spr)
   return 0;
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
   
   char trace_string[100];
   int trace_string_length;
   int errors_found = 0;
   current_test = 0;
-  int i;
+  int i=0;
+  int limit = 0;
+
+  // Allow user to pass a number of tests to run
+  if (argc > 1 )
+    limit = atoi(argv[1]);
+  
+  // Check for a -d flag
+  for (i=1;i<argc;i++)
+    if (strcmp("-d", argv[i])==0)
+      or1ktrace_debug_on = 1;
 
   printf("Running tests on instruction disassembly\n");
 
@@ -53,10 +70,13 @@ int main(void)
   while (test_or1k_bin[current_test] != 0xffffffff)
      
     {      
+      
+      if ((limit!=0) && (current_test==limit))
+	break;
+      
       if (or1ktrace_debug_on)
 	printf ("debug - main(): trying insn binary 0x%08x\n\n", 
 		test_or1k_bin[current_test]);
-      
 
       
       trace_string_length = or1ktrace_gen_insn_string(test_or1k_pc[current_test],

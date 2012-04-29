@@ -5,6 +5,7 @@
 
 #include <bfd.h>
 #include <dis-asm.h>		/* libopcodes header from binutils */
+#include <or1k-desc.h>
 
 #include "spr-defs.h"
 
@@ -30,7 +31,8 @@ static int libopcode_insn_fprintf( void * stream, const char * format, ... ) {
 	va_list args;
 	va_start (args, format);
 
-	rv = vsnprintf(or1ktrace_insn_disassembly_string+or1ktrace_insn_disassembly_string_len, 
+	rv = vsnprintf(or1ktrace_insn_disassembly_string +
+		       or1ktrace_insn_disassembly_string_len, 
 		       59, format, args );
 
 	va_end (args);
@@ -108,7 +110,7 @@ read_memory_func (bfd_vma memaddr,
        ((x<<8)&0xff0000)|			\
        ((x<<24)&0xff000000))
       
-      insn = SWAP_ENDIAN32(insn);
+      //insn = SWAP_ENDIAN32(insn);
 
       memcpy((void *)myaddr, (void*)&insn, length);
 
@@ -152,7 +154,8 @@ int or1ktrace_gen_insn_string(unsigned long int addr, char* insn_string_ptr)
   return or1ktrace_insn_disassembly_string_len;
 }
 
-static int or1ktrace_gen_result_string(char* disas_string_ptr, char* trace_string_ptr)
+static int or1ktrace_gen_result_string(char* disas_string_ptr, 
+				       char* trace_string_ptr)
 {
   /* determine from the disassembled string what the result we want to 
    print out is*/
@@ -164,7 +167,9 @@ static int or1ktrace_gen_result_string(char* disas_string_ptr, char* trace_strin
 #define DISAS_HAS(x) (0 == strncmp (x, disas_string_ptr, strlen(x)))
 
 #define TRACE_SPRINTF(fmt, value) \
-  or1ktrace_dis_string_offset += sprintf (trace_string_ptr+or1ktrace_dis_string_offset, fmt, value)
+  or1ktrace_dis_string_offset += sprintf (trace_string_ptr +	       \
+					  or1ktrace_dis_string_offset, \
+					  fmt, value)
 
   if DISAS_HAS(".word ")
 		/* nothing to see here */
@@ -307,11 +312,14 @@ void or1ktrace_init( unsigned long int  (*get_mem32)(unsigned long int),
   or1ktrace_disinfo.print_address_func = or1ktrace_custom_print_address;
   or1ktrace_disinfo.memory_error_func = or1ktrace_report_memory_error;
   or1ktrace_disinfo.read_memory_func = read_memory_func;
-  /* set or32 architecture */
-  or1ktrace_disinfo.arch = bfd_arch_or32;
+  or1ktrace_disinfo.endian = BFD_ENDIAN_BIG;
+  /* set or1k architecture */
+  or1ktrace_disinfo.arch = bfd_arch_or1k;
+  //or1ktrace_disinfo.mach = MACH_OR32;
+
   disassemble_init_for_target(&or1ktrace_disinfo);
-  /* We know our target is big endian 32-bit OpenRISC 1000 */
-  or1ktrace_disassemble = (disassembler_ftype) print_insn_big_or32;
+
+  or1ktrace_disassemble = (disassembler_ftype) print_insn_or1k;
 
   /* Save the getter functions */
   or1ktrace_get_mem32 = get_mem32;
