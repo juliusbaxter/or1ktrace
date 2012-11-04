@@ -18,18 +18,23 @@ Building:
 So far, the library builds and the basic disassembly test runs. But it is not
 automated or pretty.
 
+* prerequisites
+  Make sure that libbfd.so and libopcodes.so are available. These libraries
+  can be built by setting --enable-shared when building binutils.
+
 * Configuring
   Run ./configure but also pass the location of a binutils compile directory
   so it can pickup the libbfd and libopcodes archives and headers it contains.
 
       ./configure \
-      BINUTILS_BLD_DIR=$HOME/svn/opencores/openrisc/trunk/gnu-src/bd-elf \
-      BINUTILS_SRC_DIR=$HOME/svn/opencores/openrisc/trunk/gnu-src/binutils 
+      BINUTILS_BLD_DIR=$<path to toolchain>/x86_64-unknown-linux-gnu/or1k-elf
 
   Next, run make to build the libraries and a test program.
 
       make
 
+  If make complains about libor1ktrace.Tpo, make sure to run autoreconf -i prior
+  to configure
 Testing:
 =======
 

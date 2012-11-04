@@ -1,11 +1,10 @@
-
+#include "config.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <bfd.h>
 #include <dis-asm.h>		/* libopcodes header from binutils */
-#include <or1k-desc.h>
 
 #include "spr-defs.h"
 
