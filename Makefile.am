@@ -25,5 +25,4 @@ testasm_SOURCES 	= test-asm.c
 testasm_LDADD	= libor1ktrace.la
 testasm_LDFLAGS = -lor1ktrace -liberty -lz
 
-
-
+include_HEADERS = or1ktrace.h
